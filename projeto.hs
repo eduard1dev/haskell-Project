@@ -23,6 +23,7 @@ projecaoX ((p1,p2),(q1,q2)) = ((p1,0),(q1,0))
 projecaoY :: Reta -> Reta
 projecaoY ((p1,p2),(q1,q2)) = ((0,p2),(0,q2))
 
+-- Questao 1
 retasIntersectam :: Reta -> Reta -> Bool
 retasIntersectam (r1,r2) (t1,t2)
                | ( (orientacao pv1) /= (orientacao pv2) ) && ( (orientacao pw1) /= (orientacao pw2) ) = True
@@ -37,9 +38,25 @@ retasIntersectam (r1,r2) (t1,t2)
                       py1 = produtoVetorialDois (calculaVetorProjecao (projecaoX (t1,t2))) (calculaVetorProjecao (projecaoX (t2,r1)))
                       py2 = produtoVetorialDois (calculaVetorProjecao (projecaoX (t1,t2))) (calculaVetorProjecao (projecaoX (t2,r1)))
 
+-- Questao 2
 poligonoIntersecta :: Reta -> [Ponto] -> Bool
 poligonoIntersecta reta pontosPoligono
       | [] /= [True | x<-[0..length listaNova - 2], retasIntersectam reta (listaNova!!x, listaNova!!(x + 1))] = True
       | otherwise = False
       where
             listaNova = concat [pontosPoligono, take 1 pontosPoligono]
+
+-- Questao 3
+poligonosIntersecta :: [Ponto] -> [Ponto] -> Bool
+poligonosIntersecta poligono1 poligono2 = [] /= [True | x<-[0..length listaNova - 2], poligonoIntersecta (listaNova!!x, listaNova!!(x + 1)) poligono2]
+      where
+            listaNova = concat [poligono1, take 1 poligono1]
+
+-- Questao 4
+calculaAreaPoligono :: [Ponto] -> Double
+calculaAreaPoligono poligono = if area >= 0 then area else negate area
+      where
+            listaNova = concat [poligono, take 1 poligono]
+            area = sum [fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1)) | x<-[0..length listaNova - 2]] / 2
+            --n = listaNova!!x
+            --nMais1 = listaNova!!(x + 1)
