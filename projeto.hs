@@ -68,3 +68,16 @@ calculaCentroide poligono = (s1/(calculaAreaPoligono poligono * 6), s2/(calculaA
             listaNova = concat [poligono, take 1 poligono]
             s1 = sum [(fst (listaNova!!x) + fst (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
             s2 = sum [(snd (listaNova!!x) + snd (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
+
+
+calculaPontoIntersec :: Reta -> Reta -> Ponto
+calculaPontoIntersec (px,py) (qx,qy) = (x, y)
+      where
+            determinanteX1 = (snd px - snd py)
+            determinanteY1 = (fst py - fst px)
+            resto1 = fst px*snd py - fst py*snd px
+            determinanteX2 = (snd qx - snd qy)
+            determinanteY2 = (fst qy - fst qx )
+            resto2 = fst qx*snd qy - fst qy*snd qx
+            y = negate (resto1*negate determinanteX2  + resto2*determinanteX1) / (determinanteY1*negate determinanteX2 + determinanteY2*determinanteX1)
+            x = negate (resto1*negate determinanteY2  + resto2*determinanteY1) / (determinanteX1*negate determinanteY2 + determinanteX2*determinanteY1)
