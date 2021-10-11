@@ -69,7 +69,7 @@ calculaCentroide poligono = (s1/(calculaAreaPoligono poligono * 6), s2/(calculaA
             s1 = sum [(fst (listaNova!!x) + fst (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
             s2 = sum [(snd (listaNova!!x) + snd (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
 
-
+-- questao 7
 calculaPontoIntersec :: Reta -> Reta -> Ponto
 calculaPontoIntersec (px,py) (qx,qy) = (x, y)
       where
