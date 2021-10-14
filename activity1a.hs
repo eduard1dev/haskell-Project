@@ -24,7 +24,6 @@ update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,
 update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,vy)+ pi/6), sin (vectorDirection (vx,vy) + pi/6)), a + pi/6)
 update (TimePassing t) (x, y, (vx,vy), a) = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
- --ere constanteVelX = 
 
 
 calculaAreaPoligono :: [Ponto] -> Double
