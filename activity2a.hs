@@ -23,7 +23,7 @@ update (KeyPress "Up") (x, y, (vx,vy), a) = (x, y, (vx + (cos (vectorDirection (
 update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,vy) - pi/6), sin (vectorDirection (vx,vy) - pi/6)), a - pi/6)
 update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,vy)+ pi/6), sin (vectorDirection (vx,vy) + pi/6)), a + pi/6)
 update (TimePassing t) (x, y, (vx,vy), a)
-        |x > 9 || x < -9 || y > 9 || y < -9 = (100, 100, (vx,vy), a)
+        |x > 9.5 || x < -9.5 || y > 9.5 || y < -9.5 = (100, 100, (vx,vy), a)
         |otherwise = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
 
