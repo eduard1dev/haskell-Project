@@ -13,7 +13,7 @@ nave::[Ponto]
 nave = [(-1,0),(1,0),(0,2)]
 
 visualization :: World -> Picture
-visualization (x, y, _, a) = translated x y (rotated a (translated (-x0) (-y0) (polygon nave))) & coordinatePlane
+visualization (x, y, _, a) = translated x y (rotated a (translated (-x0) (-y0) (polygon nave)))
   where 
     x0 = fst (calculaCentroide nave)
     y0 = snd (calculaCentroide nave)
