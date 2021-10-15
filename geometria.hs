@@ -1,3 +1,6 @@
+--Nome : Gabriel Miranda Oliva
+--Matrícula : 202100011430
+
 type Vetor = (Double,Double)
 type Ponto = (Double,Double)
 type Reta  = (Ponto,Ponto)
@@ -70,25 +73,22 @@ calculaCentroide poligono = (s1/(calculaAreaPoligono poligono * 6), s2/(calculaA
 --Questao 6
 vetorReflexo :: Vetor -> Reta -> Vetor 
 vetorReflexo vetor reta 
-           |xVetor * yReta - yVetor * xReta > 0 = ( ( -1 * ( (fst vetor * anguloCos) - (snd vetor * anguloSen) ),( -1 * ( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) ) )
-           |xVetor * yReta - yVetor * xReta < 0 = ( ( (fst vetor * anguloCos) - (snd vetor * anguloSen),( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) )
+           |comp > 0 = ( (-1*(fst resp)),(-1*(snd resp)) )
+           |comp < 0 = resp
            |otherwise = vetor 
-           where vetorFinal = ( ( (fst vetor * anguloCos) - (snd vetor * anguloSen),( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) )
-                 anguloCos = produtoEscalar / (moduloVetor * moduloVetorReta)
-                 anguloSen = sqrt (1 - anguloCos ^2)
-                 angulotg = anguloSen / anguloCos 
-                 vetorReta = calculaVetorProjecao reta
-                 moduloVetor = sqrt ( ((fst vetor)^2) + ((snd vetor)^2) )
-                 moduloVetorReta = sqrt ( ((fst vetorReta)^2) + ((snd vetorReta)^2) )
-                 produtoEscalar = ((fst vetor)*(fst vetorReta)) + ((snd vetor)*(snd vetorReta)) 
+           where vetorReta = calculaVetorProjecao reta
+                 comp = xVetor * yReta - yVetor * xReta
+                 resp = (( (xVetor * (cos ang) ) - (yVetor * (sin ang) ),((xVetor * (sin ang) ) + (yVetor * (cos ang) ))))
                  xVetor = fst vetor 
                  yVetor = snd vetor
-                 xReta = fst vetorReta
-                 yReta = snd vetorReta
+                 xReta = fst (snd reta) - fst (fst reta) 
+                 yReta = snd (snd reta) - snd (fst reta)
+                 cosAng = produtoInterno / (moduloV * moduloR)
+                 produtoInterno = xVetor * xReta + yVetor * yReta
+                 ang = 2*(acos cosAng) - pi
+                 moduloV = sqrt ( (xVetor)^2 + (yVetor)^2)
+                 moduloR = sqrt ( (xReta)^2 + (yReta)^2)
 
-seno2X :: Double -> Double
-seno2X s = 2*s*( sqrt (1 - s ^ 2) )
-                  
 -- questao 7
 calculaPontoIntersec :: Reta -> Reta -> Ponto
 calculaPontoIntersec (px,py) (qx,qy) = (x, y)

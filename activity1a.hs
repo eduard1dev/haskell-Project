@@ -1,3 +1,6 @@
+--Nome : Gabriel Miranda Oliva
+--Matrícula : 202100011430
+
 {-# LANGUAGE OverloadedStrings #-}
 import CodeWorld
 
