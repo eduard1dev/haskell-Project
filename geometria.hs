@@ -68,17 +68,23 @@ calculaCentroide poligono = (s1/(calculaAreaPoligono poligono * 6), s2/(calculaA
             s2 = sum [(snd (listaNova!!x) + snd (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
 
 --Questao 6
-vetorReflexo :: Vetor -> Reta -> Vetor
-vetorReflexo vetor reta
-            |produtoVetorialDois vetorR vetor == -1 = vetorFinal
-            |otherwise = ( (fst vetorFinal),(snd vetorFinal) )
-            where vetorFinal = ( ( (fst vetor * angCos) - (snd vetor * angSen),( (fst vetor * angSen) + (snd vetor * angCos) ) ) )
-                  angSen = -1 * ( seno2X ( produtoVetorialDois vetor vetorR / (moduloV * moduloVR) ) )
-                  angCos = sqrt ( 1 - (angSen ^ 2) )
-                  produtoEscalar = ((fst vetor)*(fst vetorR)) + ((snd vetor)*(snd vetorR))
-                  vetorR = calculaVetorProjecao reta
-                  moduloV = sqrt ( ((fst vetor)^2) + ((snd vetor)^2) )
-                  moduloVR = sqrt ( ((fst vetorR)^2) + ((snd vetorR)^2) )
+vetorReflexo :: Vetor -> Reta -> Vetor 
+vetorReflexo vetor reta 
+           |xVetor * yReta - yVetor * xReta > 0 = ( ( -1 * ( (fst vetor * anguloCos) - (snd vetor * anguloSen) ),( -1 * ( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) ) )
+           |xVetor * yReta - yVetor * xReta < 0 = ( ( (fst vetor * anguloCos) - (snd vetor * anguloSen),( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) )
+           |otherwise = vetor 
+           where vetorFinal = ( ( (fst vetor * anguloCos) - (snd vetor * anguloSen),( (fst vetor * anguloSen) + (snd vetor * anguloCos) ) ) )
+                 anguloCos = produtoEscalar / (moduloVetor * moduloVetorReta)
+                 anguloSen = sqrt (1 - anguloCos ^2)
+                 angulotg = anguloSen / anguloCos 
+                 vetorReta = calculaVetorProjecao reta
+                 moduloVetor = sqrt ( ((fst vetor)^2) + ((snd vetor)^2) )
+                 moduloVetorReta = sqrt ( ((fst vetorReta)^2) + ((snd vetorReta)^2) )
+                 produtoEscalar = ((fst vetor)*(fst vetorReta)) + ((snd vetor)*(snd vetorReta)) 
+                 xVetor = fst vetor 
+                 yVetor = snd vetor
+                 xReta = fst vetorReta
+                 yReta = snd vetorReta
 
 seno2X :: Double -> Double
 seno2X s = 2*s*( sqrt (1 - s ^ 2) )
