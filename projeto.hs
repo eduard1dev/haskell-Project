@@ -70,13 +70,10 @@ calculaCentroide poligono = (s1/(calculaAreaPoligono poligono * 6), s2/(calculaA
             s2 = sum [(snd (listaNova!!x) + snd (listaNova!!(x + 1)))*(fst (listaNova!!x) * snd (listaNova!!(x + 1)) - snd (listaNova!!x) * fst (listaNova!!(x + 1))) | x<-[0..length listaNova - 2]]
 
 --Questao 6
-
---funfo mas quado eh 0 esta dando -0
-
 vetorReflexo :: Vetor -> Reta -> Vetor
 vetorReflexo vetor reta
             |produtoVetorialDois vetorR vetor == -1 = vetorFinal
-            |otherwise = ( (fst vetorFinal * (-1)),(snd vetorFinal * (-1)) )
+            |otherwise = ( (fst vetorFinal),(snd vetorFinal) )
             where vetorFinal = ( ( (fst vetor * angCos) - (snd vetor * angSen),( (fst vetor * angSen) + (snd vetor * angCos) ) ) )
                   angSen = -1 * ( seno2X ( produtoVetorialDois vetor vetorR / (moduloV * moduloVR) ) )
                   angCos = sqrt ( 1 - (angSen ^ 2) )
