@@ -13,17 +13,18 @@ nave::[Ponto]
 nave = [(-1,0),(1,0),(0,2)]
 
 visualization :: World -> Picture
-visualization (x, y, _, a) = translated x y (rotated a (translated (-x0) (-y0) (polygon nave)))
+visualization (x, y, _, a) = translated x y (rotated a (translated (-x0) (-y0) (polygon nave))) & coordinatePlane
   where 
     x0 = fst (calculaCentroide nave)
     y0 = snd (calculaCentroide nave)
   
 update:: Event -> World  -> World 
-update (KeyPress "Up") (x, y, (vx,vy), a) = (x, y, (vx + (cos (vectorDirection (vx,vy)))*1.15, vy + (sin (vectorDirection (vx,vy)))*1.15), a)
-update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,vy) - pi/6), sin (vectorDirection (vx,vy) - pi/6)), a - pi/6)
-update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (cos (vectorDirection (vx,vy)+ pi/6), sin (vectorDirection (vx,vy) + pi/6)), a + pi/6)
+update (KeyPress "Up") (x, y, (vx,vy), a) = (x, y, (vx*1.15, vy*1.15), a)
+update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (rotatedVector (-pi/6) (vx,vy)), a - pi/6)
+update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (rotatedVector (pi/6) (vx,vy)), a + pi/6)
 update (TimePassing t) (x, y, (vx,vy), a) = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
+
 
 
 calculaAreaPoligono :: [Ponto] -> Double
