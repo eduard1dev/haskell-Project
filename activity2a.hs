@@ -28,7 +28,7 @@ update (KeyPress "Up") (x, y, (vx,vy), a) = (x, y, (vx + (cos (vectorDirection (
 update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (rotatedVector (-pi/6) (vx,vy)), a - pi/6)
 update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (rotatedVector (pi/6) (vx,vy)), a + pi/6)
 update (TimePassing t) (x, y, (vx,vy), a)
-        |x > 9.5 || x < -9.5 || y > 9.5 || y < -9.5 = (100, 100, (vx,vy), a)
+        |x > 9.5 || x < -9.5 || y > 9.5 || y < -9.5 = (100, 100, (0,0), a)
         |otherwise = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
 

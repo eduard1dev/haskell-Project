@@ -27,8 +27,37 @@ update:: Event -> World  -> World
 update (KeyPress "Up") (x, y, (vx,vy), a) = (x, y, (vx + (cos (vectorDirection (vx,vy)))*1.15, vy + (sin (vectorDirection (vx,vy)))*1.15), a)
 update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (rotatedVector (-pi/6) (vx,vy)), a - pi/6)
 update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (rotatedVector (pi/6) (vx,vy)), a + pi/6)
-update (TimePassing t) (x, y, (vx,vy), a) = (x+vx*t, y+vy*t, (vx*0.99,vy*0.99), a)
+update (TimePassing t) (x, y, (vx,vy), a)
+        |x > 9.5 = (9.5, y, vetorReflexo (vx*0.92,vy*0.92) ((9.5,-9.5),(9.5,9.5)), vectorDirection (vetorReflexo (vx,vy) ((9.5,-9.5),(9.5,9.5))) - pi/2)
+        |x < -9.5 = (-9.5, y, vetorReflexo (vx*0.92,vy*0.92) ((-9.5,9.5),(-9.5,-9.5)), vectorDirection (vetorReflexo (vx,vy) ((-9.5,9.5),(-9.5,-9.5))) - pi/2)
+        |y > 9.5 = (x, 9.5, vetorReflexo (vx*0.92,vy*0.92) ((9.5,9.5),(-9.5,9.5)), vectorDirection (vetorReflexo (vx,vy) ((9.5,9.5),(-9.5,9.5))) - pi/2)
+        |y < -9.5 = (x, -9.5, vetorReflexo (vx*0.92,vy*0.92) ((-9.5,-9.5),(9.5,-9.5)), vectorDirection (vetorReflexo (vx,vy) ((-9.5,-9.5),(9.5,-9.5))) - pi/2)
+        |otherwise = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
+
+vetorReflexo :: Vetor -> Reta -> Vetor 
+vetorReflexo vetor reta 
+           |comp > 0 = ( (-1*(fst resp)),(-1*(snd resp)) )
+           |comp < 0 = resp
+           |otherwise = vetor 
+           where vetorReta = calculaVetorProjecao reta
+                 comp = xVetor * yReta - yVetor * xReta
+                 resp = (( (xVetor * (cos ang) ) - (yVetor * (sin ang) ),((xVetor * (sin ang) ) + (yVetor * (cos ang) ))))
+                 xVetor = fst vetor 
+                 yVetor = snd vetor
+                 xReta = fst (snd reta) - fst (fst reta) 
+                 yReta = snd (snd reta) - snd (fst reta)
+                 cosAng = produtoInterno / (moduloV * moduloR)
+                 produtoInterno = xVetor * xReta + yVetor * yReta
+                 ang = 2*(acos cosAng) - pi
+                 moduloV = sqrt ( (xVetor)^2 + (yVetor)^2)
+                 moduloR = sqrt ( (xReta)^2 + (yReta)^2)
+
+calculaVetor :: Ponto -> Ponto -> Vetor
+calculaVetor (p1,p2) (q1,q2) = (q1 - p1,p2 - q2)
+
+calculaVetorProjecao :: Reta -> Vetor
+calculaVetorProjecao (r1,r2) = calculaVetor r1 r2
 
 calculaAreaPoligono :: [Ponto] -> Double
 calculaAreaPoligono poligono = if area >= 0 then area else negate area

@@ -24,16 +24,11 @@ visualization (x, y, _, a) = translated x y (rotated a (translated (-x0) (-y0) (
     y0 = snd (calculaCentroide nave)
   
 update:: Event -> World  -> World 
-update (KeyPress "Up") (x, y, (vx,vy), a) = if modulo vx >= 5 || modulo vy >= 5 then (x, y, (vx,vy), a) else (x, y, (vx + (cos (vectorDirection (vx,vy)))*1.15, vy + (sin (vectorDirection (vx,vy)))*1.15), a)
+update (KeyPress "Up") (x, y, (vx,vy), a) =(x, y, (vx + (cos (vectorDirection (vx,vy)))*1.15, vy + (sin (vectorDirection (vx,vy)))*1.15), a)
 update (KeyPress "Right") (x, y, (vx,vy), a) = (x, y, (rotatedVector (-pi/6) (vx,vy)), a - pi/6)
 update (KeyPress "Left") (x, y, (vx,vy), a) = (x, y, (rotatedVector (pi/6) (vx,vy)), a + pi/6)
 update (TimePassing t) (x, y, (vx,vy), a) = (x+vx*t, y+vy*t, (vx,vy), a)
 update _ w = w
-
-modulo :: Double -> Double
-modulo a
-     |a >= 0 = a
-     |otherwise = negate a
 
 calculaAreaPoligono :: [Ponto] -> Double
 calculaAreaPoligono poligono = if area >= 0 then area else negate area
