@@ -1,4 +1,4 @@
---Nome : Gabriel Miranda Oliva
+ --Nome : Gabriel Miranda Oliva
 --Matrícula : 202100011430
 --Nome : Carlos Eduardo Dias dos Santos
 --Matrícula : 202100104941
@@ -24,13 +24,13 @@ tempoMaxFora = 5     -- Tempo máximo que nave pode ficar fora
 durExplosao = 3       -- Tempo de duração de uma explosão  
 
 
-main = activityOf ((-4, 0,(0,1), 0), (4, 0,(0,1), 0)) update visualization
+main = activityOf ((-4, 0,(0,1), pi/2), (4, 0,(0,1), pi/2)) update visualization
 
 nave::[Ponto]
-nave = [(-1,0),(1,0),(0,2)]
+nave = [(-1,1),(-1,-1),(1,0)]
 
 nave2::[Ponto]
-nave2 = [(1,0),(3,0),(2,2)]
+nave2 = [(2,1),(2,-1),(4,0)]
 
 visualization :: World -> Picture
 visualization ((x, y, _, a), (x1, y1, _, a1)) = translated x y (rotated a (translated (-xa0) (-ya0) (polygon nave))) & translated x1 y1 (rotated a1 (translated (-xb0) (-yb0) (polygon nave2)))
@@ -42,14 +42,14 @@ visualization ((x, y, _, a), (x1, y1, _, a1)) = translated x y (rotated a (trans
   
 update:: Event -> World  -> World 
 --Nave 1
-update (KeyPress "Up") ((x, y, (vx,vy), a), rest) = ((x, y, (vx + (cos (vectorDirection (vx,vy)))*1.15, vy + (sin (vectorDirection (vx,vy)))*1.15), a), rest)
-update (KeyPress "Right") ((x, y, (vx,vy), a), rest) = ((x, y, (rotatedVector (-pi/6) (vx,vy)), a - pi/6), rest)
-update (KeyPress "Left") ((x, y, (vx,vy), a), rest) = ((x, y, (rotatedVector (pi/6) (vx,vy)), a + pi/6), rest)
+update (KeyPress "Up") ((x, y, (vx,vy), a), rest) = ((x, y, (vectorSum (vx, vy) ((cos a)*accNave, (sin a)*accNave)), a), rest)
+update (KeyPress "Right") ((x, y, (vx,vy), a), rest) = ((x, y, (vx, vy), a - velAngNave), rest)
+update (KeyPress "Left") ((x, y, (vx,vy), a), rest) = ((x, y, (vx, vy), a + velAngNave), rest)
 
 --Nave 2
-update (KeyPress "W") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (vx1 + (cos (vectorDirection (vx1,vy1)))*1.15, vy1 + (sin (vectorDirection (vx1,vy1)))*1.15), a))
-update (KeyPress "D") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (rotatedVector (-pi/6) (vx1,vy1)), a - pi/6))
-update (KeyPress "A") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (rotatedVector (pi/6) (vx1,vy1)), a + pi/6))
+update (KeyPress "W") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (vectorSum (vx1, vy1) ((cos a)*accNave, (sin a)*accNave)), a))
+update (KeyPress "D") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (vx1, vy1), a - velAngNave))
+update (KeyPress "A") (rest, (x1, y1, (vx1,vy1), a)) = (rest, (x1, y1, (vx1, vy1), a + velAngNave))
 
 update (TimePassing t) ((x, y, (vx,vy), a), (x1, y1, (vx1,vy1), a1)) = ((x+vx*t, y+vy*t, (vx,vy), a), (x1+vx1*t, y1+vy1*t, (vx1,vy1), a1))
 update _ w = w
