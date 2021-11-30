@@ -9,18 +9,18 @@ type Direcao = Double    -- ângulo em radianos
 type Giro = Char
 
 data Nave = Nave {
-  posNave:: Point, -- localização da nave 
+  posNave:: Point, -- localização da nave
   velNave:: Vector, -- vetor de velocidade
   dirNave:: Double, -- direção da ponta da nave
-  girNave:: Char,
-  accNave:: Bool, -- 'a', 'h', 's' (anti-horário, horário, sem girar)
-  disp:: Bool, -- True se a nave está acelerada
-  vida :: Int -- Quantos projeteis a nave pode ser atingida
+  girNave:: Char, -- 'a', 'h', 's' (anti-horário, horário, sem girar)
+  accNave:: Bool, -- True se a nave está acelerada
+  disp:: Bool, -- Quantos projeteis a nave pode ser atingida
+  vida :: Int
 } deriving (Show) 
 
 data Projetil = Projetil {
-  posProjetil:: Point,
-  dirProjetil:: Double
+  posProjetil:: Point, -- localização do projetil
+  dirProjetil:: Double -- direção do projeto
 } deriving (Show) 
 
 data Espaco = Espaco {
