@@ -14,14 +14,15 @@ data Nave = Nave {
   dirNave:: Double, -- direção da ponta da nave
   girNave:: Char, -- 'a', 'h', 's' (anti-horário, horário, sem girar)
   accNave:: Bool, -- True se a nave está acelerada
-  disp:: Bool, -- Quantos projeteis a nave pode ser atingida
-  vida :: Int
+  disp:: Bool, -- True se vai disparar, False se nao
+  vida :: Int, -- Quantos projeteis a nave pode ser atingida
+  clockArma :: Double -- tempo para atirar 1 projetil (4 tiros/seg)
 } deriving (Show) 
 
 data Projetil = Projetil {
   posProjetil:: Point, -- localização do projetil
   dirProjetil:: Double -- direção do projeto
-} deriving (Show) 
+} deriving (Show, Eq) 
 
 data Espaco = Espaco {
   nave1, nave2 :: Nave,
@@ -30,6 +31,7 @@ data Espaco = Espaco {
 
 vRotacao = pi/2
 mAceleracao = 2
+cadencia = 1/4
 
 mundoInicial = Espaco {
    nave1 = Nave {posNave = (0,0),  
@@ -38,7 +40,8 @@ mundoInicial = Espaco {
    girNave = 's',   
    accNave = False,
    disp = False,
-   vida = 10
+   vida = 10,
+   clockArma = 0.0
    },
    projeteis = []
 }
@@ -74,20 +77,26 @@ atualiza (KeyPress "D") espaco = espaco { nave1 = update espaco}
   where update (Espaco { nave1 = nave}) = nave {girNave = 'h'}
 atualiza (KeyRelease "D") espaco = espaco { nave1 = update espaco}
   where update (Espaco { nave1 = nave}) = nave {girNave = 's'}
-atualiza (KeyPress "E") espaco = update espaco espaco
-  where update (Espaco {nave1 = (Nave {posNave = p, dirNave = d}), projeteis = pjts}) espaco = espaco {projeteis = Projetil {posProjetil = p, dirProjetil = d}:pjts}
+atualiza (KeyPress "E") espaco = espaco {nave1 = update espaco}
+  where update (Espaco {nave1 = nave}) = nave {disp = True}
+atualiza (KeyRelease "E") espaco = espaco {nave1 = update espaco}
+  where update (Espaco {nave1 = nave}) = nave {disp = False}
 
-atualiza (TimePassing t) espaco = espaco { nave1 = updateNave1 espaco, projeteis = atualizaProjeteis espaco}
+atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = atualizaProjeteis . vaiAtirar $ espaco})
   where
-    atualizaProjeteis (Espaco {projeteis = pjts}) = map f pjts 
+    atualizaProjeteis (Espaco {projeteis = pjts}) = map f pjts
       where 
         f (Projetil {posProjetil = p, dirProjetil = d}) = Projetil {posProjetil = p1 p (velocidade d), dirProjetil = d}
         p1 p v = mruvPos p v (0,0) t
         v1 v = mruvVel v (0,0) t
         velocidade d = rotatedVector d (1,0)
-        
+    
+    vaiAtirar (Espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts})
+            |dis == True && k >= cadencia = espaco {projeteis = Projetil{posProjetil = p, dirProjetil = d}:pjts} 
+            |otherwise = espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts}
+
     updateNave1 (Espaco { nave1 = nave}) = updateValues nave nave
-    updateValues (Nave {posNave = p, velNave = v, accNave = a, dirNave = d, girNave = g}) nave = nave {posNave = p1 p v a d, velNave = v1 v a d, dirNave = d1 d g}
+    updateValues (Nave {posNave = p, velNave = v, accNave = a, dirNave = d, girNave = g, clockArma = clock}) nave = nave {posNave = p1 p v a d, velNave = v1 v a d, dirNave = d1 d g, clockArma = cronometro clock}
     p1 p v a d = mruvPos p v (acc a d) t
     
     v1 v a d = mruvVel v (acc a d) t
@@ -102,7 +111,11 @@ atualiza (TimePassing t) espaco = espaco { nave1 = updateNave1 espaco, projeteis
       | g == 'a'  = vRotacao
       | g == 'h'  = -vRotacao
       | otherwise = 0
-          
+    
+    cronometro l -- modifica o clockArma
+             |l <= cadencia = l + 0.5 * t
+             |otherwise = 0.0
+
 atualiza _ m = m    
  
  
