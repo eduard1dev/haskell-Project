@@ -83,7 +83,7 @@ atualiza (KeyPress "E") espaco = espaco {nave1 = update espaco}
 atualiza (KeyRelease "E") espaco = espaco {nave1 = update espaco}
   where update (Espaco {nave1 = nave}) = nave {disp = False}
 
-atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = destroiBala . atualizaProjeteis . vaiAtirar $ espaco})
+atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = destroiBalaLocal . destroiBalaTempo . atualizaProjeteis . vaiAtirar $ espaco})
   where
     atualizaProjeteis (Espaco {projeteis = pjts}) = map f pjts
       where 
@@ -92,9 +92,12 @@ atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis
         v1 v = mruvVel v (0,0) t
         velocidade d = rotatedVector d (1,0)
     
-    destroiBala pjts = filter removedor pjts
-                 where removedor (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if tim <= 0 then False else True
+    destroiBalaTempo pjts = filter removedor pjts
+               where removedor (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if tim <= 0 then False else True
     
+    destroiBalaLocal pjts = filter remover pjts
+               where remover (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if fst p >= 10 || fst p <= -10 || snd p >= 10 || snd p <= -10 then False else True
+               
     vaiAtirar (Espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts})
             |dis == True && k >= cadencia = espaco {projeteis = Projetil{posProjetil = p, dirProjetil = d, timer = 5.0}:pjts} 
             |otherwise = espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts}
