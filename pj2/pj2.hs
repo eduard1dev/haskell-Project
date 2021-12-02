@@ -21,7 +21,8 @@ data Nave = Nave {
 
 data Projetil = Projetil {
   posProjetil:: Point, -- localização do projetil
-  dirProjetil:: Double -- direção do projeto
+  dirProjetil:: Double, -- direção do projetil
+  timer:: Double -- tempo de vida do projetil
 } deriving (Show, Eq) 
 
 data Espaco = Espaco {
@@ -82,17 +83,20 @@ atualiza (KeyPress "E") espaco = espaco {nave1 = update espaco}
 atualiza (KeyRelease "E") espaco = espaco {nave1 = update espaco}
   where update (Espaco {nave1 = nave}) = nave {disp = False}
 
-atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = atualizaProjeteis . vaiAtirar $ espaco})
+atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = destroiBala . atualizaProjeteis . vaiAtirar $ espaco})
   where
     atualizaProjeteis (Espaco {projeteis = pjts}) = map f pjts
       where 
-        f (Projetil {posProjetil = p, dirProjetil = d}) = Projetil {posProjetil = p1 p (velocidade d), dirProjetil = d}
+        f (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = Projetil {posProjetil = p1 p (velocidade d), dirProjetil = d, timer = atualizaTimer tim}
         p1 p v = mruvPos p v (0,0) t
         v1 v = mruvVel v (0,0) t
         velocidade d = rotatedVector d (1,0)
     
+    destroiBala pjts = filter removedor pjts
+                 where removedor (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if tim <= 0 then False else True
+    
     vaiAtirar (Espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts})
-            |dis == True && k >= cadencia = espaco {projeteis = Projetil{posProjetil = p, dirProjetil = d}:pjts} 
+            |dis == True && k >= cadencia = espaco {projeteis = Projetil{posProjetil = p, dirProjetil = d, timer = 5.0}:pjts} 
             |otherwise = espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts}
 
     updateNave1 (Espaco { nave1 = nave}) = updateValues nave nave
@@ -115,6 +119,11 @@ atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis
     cronometro l -- modifica o clockArma
              |l <= cadencia = l + 0.5 * t
              |otherwise = 0.0
+    
+    atualizaTimer f -- atualiza o timer do projetil
+                |f >= 0.0 = f - t
+                |otherwise = f
+                
 
 atualiza _ m = m    
  
