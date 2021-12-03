@@ -1,3 +1,8 @@
+--Nome : Gabriel Miranda Oliva
+--Matrícula : 202100011430
+--Nome : Carlos Eduardo Dias dos Santos
+--Matrícula : 202100104941
+
 {-# LANGUAGE OverloadedStrings #-}
 import CodeWorld
 
