@@ -1,8 +1,3 @@
---Nome : Gabriel Miranda Oliva
---Matrícula : 202100011430
---Nome : Carlos Eduardo Dias dos Santos
---Matrícula : 202100104941
-
 {-# LANGUAGE OverloadedStrings #-}
 import CodeWorld
 
@@ -40,7 +35,16 @@ mAceleracao = 2
 cadencia = 1/4
 
 mundoInicial = Espaco {
-   nave1 = Nave {posNave = (0,0),  
+   nave1 = Nave {posNave = (-4,0),  
+   velNave = (0, 0), 
+   dirNave = pi/2, 
+   girNave = 's',   
+   accNave = False,
+   disp = False,
+   vida = 10,
+   clockArma = 0.0
+   },
+   nave2 = Nave {posNave = (4,0),  
    velNave = (0, 0), 
    dirNave = pi/2, 
    girNave = 's',   
@@ -59,11 +63,11 @@ nave = translated (-x) (-y) (solidPolygon navePol)
     (x, y) = centroide navePol
 
 projetil::Picture
-projetil = solidPolygon [(-0.15, -0.15),(0.15,-0.15),(0.15,0.15),(-0.15,0.15)]
+projetil = solidPolygon [(0,0),(0.25,0),(0.25,0.25),(0,0.25)]
 
 apresenta :: Espaco -> Picture
-apresenta (Espaco {nave1 = (Nave {posNave = (x, y), dirNave = d}), projeteis = pjts}) = 
-  translated x y (rotated d nave) & if length pjts == 0 then blank else foldr1 (&) (map f pjts)
+apresenta (Espaco {nave1 = (Nave {posNave = (x, y), dirNave = d}), nave2 = (Nave {posNave = (a, b), dirNave = d1}), projeteis = pjts}) = 
+  translated x y (rotated d nave) & translated a b (rotated d1 nave) & if length pjts == 0 then blank else foldr1 (&) (map f pjts)
   where f (Projetil {posProjetil = (x, y)}) = translated x y projetil
   
 
@@ -87,15 +91,33 @@ atualiza (KeyPress "E") espaco = espaco {nave1 = update espaco}
   where update (Espaco {nave1 = nave}) = nave {disp = True}
 atualiza (KeyRelease "E") espaco = espaco {nave1 = update espaco}
   where update (Espaco {nave1 = nave}) = nave {disp = False}
+  
+--Nave 2
+atualiza (KeyPress "Up") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {accNave = True}
+atualiza (KeyRelease "Up") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {accNave = False}
+atualiza (KeyPress "Left") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {girNave = 'a'}
+atualiza (KeyRelease "Left") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {girNave = 's'}
+atualiza (KeyPress "Right") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {girNave = 'h'}
+atualiza (KeyRelease "Right") espaco = espaco { nave2 = update espaco}
+  where update (Espaco { nave2 = nave0}) = nave0 {girNave = 's'}
+atualiza (KeyPress " ") espaco = espaco {nave2 = update espaco}
+  where update (Espaco {nave2 = nave0}) = nave0 {disp = True}
+atualiza (KeyRelease " ") espaco = espaco {nave2 = update espaco}
+  where update (Espaco {nave2 = nave0}) = nave0 {disp = False}
 
-atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis = destroiBalaLocal . destroiBalaTempo . atualizaProjeteis . vaiAtirar $ espaco})
+atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, nave2 = updateNave2 espaco, projeteis = destroiBalaLocal . destroiBalaTempo . atualizaProjeteis . vaiAtirar2 . vaiAtirar $ espaco})
   where
     atualizaProjeteis (Espaco {projeteis = pjts}) = map f pjts
       where 
         f (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = Projetil {posProjetil = p1 p (velocidade d), dirProjetil = d, timer = atualizaTimer tim}
         p1 p v = mruvPos p v (0,0) t
         v1 v = mruvVel v (0,0) t
-        velocidade d = rotatedVector d (2,0)
+        velocidade d = rotatedVector d (1,0)
     
     destroiBalaTempo pjts = filter removedor pjts
                where removedor (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if tim <= 0 then False else True
@@ -106,9 +128,17 @@ atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, projeteis
     vaiAtirar (Espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts})
             |dis == True && k >= cadencia = espaco {projeteis = Projetil{posProjetil = p, dirProjetil = d, timer = 5.0}:pjts} 
             |otherwise = espaco {nave1 = (Nave {posNave = p, dirNave = d, disp = dis, clockArma = k}), projeteis = pjts}
+            
+    vaiAtirar2 (Espaco {nave2 = (Nave {posNave = pos1, dirNave = dir1, disp = dis1, clockArma = k1}), projeteis = pjts})
+            |dis1 == True && k1 >= cadencia = espaco {projeteis = Projetil{posProjetil = pos1, dirProjetil = dir1, timer = 5.0}:pjts} 
+            |otherwise = espaco {nave2 = (Nave {posNave = pos1, dirNave = dir1, disp = dis1, clockArma = k1}), projeteis = pjts}
 
-    updateNave1 (Espaco { nave1 = nave}) = updateValues nave nave
-    updateValues (Nave {posNave = p, velNave = v, accNave = a, dirNave = d, girNave = g, clockArma = clock}) nave = nave {posNave = p1 p v a d, velNave = v1 v a d, dirNave = d1 d g, clockArma = cronometro clock}
+    updateNave1 (Espaco { nave1 = nave}) = updateValues1 nave nave
+    updateValues1 (Nave {posNave = p, velNave = v, accNave = a, dirNave = d, girNave = g, clockArma = clock}) nave = nave {posNave = p1 p v a d, velNave = v1 v a d, dirNave = d1 d g, clockArma = cronometro clock}
+    
+    updateNave2 (Espaco { nave2 = nave}) = updateValues2 nave nave
+    updateValues2 (Nave {posNave = pos1, velNave = vel1, accNave = a1, dirNave = dir1, girNave = g1, clockArma = clock1}) nave = nave {posNave = p1 pos1 vel1 a1 dir1, velNave = v1 vel1 a1 dir1, dirNave = d1 dir1 g1, clockArma = cronometro clock1}
+
     p1 p v a d = mruvPos p v (acc a d) t
     
     v1 v a d = mruvVel v (acc a d) t
