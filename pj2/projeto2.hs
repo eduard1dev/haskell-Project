@@ -68,7 +68,7 @@ nave = translated (-x) (-y) (solidPolygon navePol)
     (x, y) = centroide navePol
 
 projetil::Picture
-projetil = solidPolygon [(0,0),(0.25,0),(0.25,0.25),(0,0.25)]
+projetil = solidPolygon [(-0.15, -0.15),(0.15,-0.15),(0.15,0.15),(-0.15,0.15)]
 
 apresenta :: Espaco -> Picture
 apresenta (Espaco {nave1 = (Nave {posNave = (x, y), dirNave = d}), nave2 = (Nave {posNave = (a, b), dirNave = d1}), projeteis = pjts}) = 
@@ -122,7 +122,7 @@ atualiza (TimePassing t) espaco = (espaco {nave1 = updateNave1 espaco, nave2 = u
         f (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = Projetil {posProjetil = p1 p (velocidade d), dirProjetil = d, timer = atualizaTimer tim}
         p1 p v = mruvPos p v (0,0) t
         v1 v = mruvVel v (0,0) t
-        velocidade d = rotatedVector d (1,0)
+        velocidade d = rotatedVector d (2,0)
     
     destroiBalaTempo pjts = filter removedor pjts
                where removedor (Projetil {posProjetil = p, dirProjetil = d, timer = tim}) = if tim <= 0 then False else True
